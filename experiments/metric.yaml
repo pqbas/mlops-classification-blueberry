@@ -1,0 +1,23 @@
+# Comparacion de deep metric learning ordinal: triplet de margen ordinal vs
+# distancia continua. 2 trials en paralelo en Modal (GPU T4), 100 epocas.
+name: metric
+type: train_probe          # entrena el encoder y encadena la sonda downstream
+runtime: modal
+device: gpu
+
+dataset: data/blueberry_five_classes_chopped_depurated
+
+method: metric_triplet,metric_continuous
+
+params:
+  epochs: 100
+  batch_size: 64
+  imgsz: 128
+  lr: 0.001
+  latent_dim: 128
+  seed: 42
+
+augmentation:
+  brightness: 0.2
+  hue: 0.1
+  saturation: 0.2

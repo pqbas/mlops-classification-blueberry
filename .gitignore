@@ -1,0 +1,18 @@
+# Datos crudos (no se versionan)
+data/
+
+# Entorno virtual uv
+.venv/
+
+# Artefactos de entrenamiento (encoder.pt, metrics.json, plots)
+runs/
+
+# Python
+__pycache__/
+*.py[cod]
+*.egg-info/
+.pytest_cache/
+.ipynb_checkpoints/
+
+# Modal / cache local
+.modal/

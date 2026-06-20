@@ -1,0 +1,23 @@
+# Sweep sobre el eje `method`: lanza 5 trials en paralelo (uno por paradigma).
+# Mismo dataset, misma capacidad de encoder, mismo presupuesto -> comparacion justa.
+name: compare_methods
+type: train_probe          # entrena el encoder y encadena la sonda downstream
+runtime: modal             # localhost para smoke test
+device: gpu
+
+dataset: data/blueberry_five_classes_chopped_depurated
+
+method: supervised,autoencoder,vqvae,rvq,jepa
+
+params:
+  epochs: 100
+  batch_size: 64
+  imgsz: 128
+  lr: 0.001
+  latent_dim: 128
+  seed: 42
+
+augmentation:
+  brightness: 0.2
+  hue: 0.1
+  saturation: 0.2
