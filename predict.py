@@ -1,9 +1,13 @@
-"""Exporta la sonda lineal supervisada a un .npz sin sklearn y verifica paridad.
+"""Exporta el clasificador supervisado a un unico .npz sin sklearn y verifica
+paridad.
 
-El encoder CNN sigue corriendo con torch (encoder.pt). La cabeza downstream
-(StandardScaler + LogisticRegression) se reduce a numpy puro: logits = W @ z + b
-sobre el embedding estandarizado, argmax = clase. Esto deja al robot (Jetson,
-sin sklearn) clasificando con un solo np.load.
+El artefacto es autocontenido (un solo archivo, encaja con el esquema
+ClassificationModel del robot): los pesos del encoder van como arrays
+``enc__<param>`` (state_dict en numpy) junto a la sonda lineal reducida a numpy
+puro (StandardScaler + LogisticRegression -> logits = W @ z + b sobre el
+embedding estandarizado, argmax = clase). El robot (Jetson, sin sklearn)
+reconstruye el Encoder desde las claves ``enc__`` y clasifica con un solo
+np.load.
 
 Parity: compara la prediccion numpy contra sklearn sobre el split test. Debe dar
 label_match=1.0000 antes de subir el .npz.
@@ -69,6 +73,12 @@ pred_numpy = numpy_predict(x_test)
 label_match = float((pred_numpy == pred_sklearn).mean())
 print(f"parity: label_match={label_match:.4f} numpy_accuracy={accuracy_score(y_test, pred_numpy):.4f}")
 
+# Fold the frozen encoder weights into the same file so the deploy artifact is a
+# single self-contained npz (one filename / one file_hash for the robot's
+# ClassificationModel). State_dict keys keep their dots under the ``enc__``
+# prefix; np.savez stores them as zip members so dotted names survive.
+enc_arrays = {f"enc__{k}": v.detach().cpu().numpy() for k, v in encoder.state_dict().items()}
+
 out = RUN / "classifier.npz"
 np.savez(
     out,
@@ -80,5 +90,6 @@ np.savez(
     class_names=np.array(class_names),
     latent_dim=np.int64(LATENT_DIM),
     imgsz=np.int64(IMGSZ),
+    **enc_arrays,
 )
-print(f"saved {out}")
+print(f"saved {out} ({len(enc_arrays)} encoder tensors + probe)")
