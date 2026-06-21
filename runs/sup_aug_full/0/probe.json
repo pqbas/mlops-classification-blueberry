@@ -1,0 +1,23 @@
+{
+  "method": "supervised",
+  "latent_dim": 64,
+  "n_train": 867,
+  "n_test": 186,
+  "class_names": [
+    "AZUL_CHOP",
+    "CREMOSO_CHOP",
+    "GUINDA_CHOP",
+    "PINTON1_CHOP",
+    "PINTON2_CHOP",
+    "ROSADO_CHOP",
+    "VERDE_CHOP"
+  ],
+  "linear": {
+    "accuracy": 0.7795698924731183,
+    "f1_macro": 0.7765833796831102
+  },
+  "knn": {
+    "accuracy": 0.7741935483870968,
+    "f1_macro": 0.7709294247975796
+  }
+}
